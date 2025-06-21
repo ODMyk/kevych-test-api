@@ -41,10 +41,7 @@ let SchedulesService = class SchedulesService {
         });
         const data = page.map((s) => ({
             ...s,
-            arrivalTime: new Date(s.arrivalTime).toISOString(),
-            departureTime: new Date(s.departureTime).toISOString(),
-            createdAt: new Date(s.createdAt).toISOString(),
-            updatedAt: new Date(s.updatedAt).toISOString(),
+            additionalStops: s.additionalStops?.map((s) => JSON.parse(s)),
             isFavorite: false,
         }));
         for (let i = 0; i < data.length; i++) {
@@ -80,10 +77,7 @@ let SchedulesService = class SchedulesService {
         }));
         return {
             ...item,
-            arrivalTime: new Date(item.arrivalTime).toISOString(),
-            departureTime: new Date(item.departureTime).toISOString(),
-            createdAt: new Date(item.createdAt).toISOString(),
-            updatedAt: new Date(item.updatedAt).toISOString(),
+            additionalStops: item.additionalStops?.map((s) => JSON.parse(s)),
             isFavorite,
         };
     }
@@ -96,21 +90,6 @@ let SchedulesService = class SchedulesService {
         });
         const formattedSchedule = {
             ...created,
-            departureTime: created.departureTime.toISOString(),
-            arrivalTime: created.arrivalTime.toISOString(),
-            createdAt: created.createdAt.toISOString(),
-            updatedAt: created.updatedAt.toISOString(),
-            additionalStops: created.additionalStops
-                ? created.additionalStops
-                    .filter((s) => s !== null)
-                    .map((stop) => {
-                    const stop_ = stop;
-                    return {
-                        stationName: stop_.stationName,
-                        arrivalTime: new Date(stop_.arrivalTime).toISOString(),
-                    };
-                })
-                : [],
             isFavorite: false,
         };
         this.trainScheduleGateway.emitScheduleChange({
@@ -131,6 +110,7 @@ let SchedulesService = class SchedulesService {
         });
     }
     async update(id, dto) {
+        console.log(JSON.stringify(dto, null, 2));
         const updated = await this.prisma.schedule.update({
             where: {
                 id,
@@ -140,23 +120,10 @@ let SchedulesService = class SchedulesService {
                 additionalStops: dto.additionalStops?.map((s) => JSON.stringify(s)),
             },
         });
+        console.log(JSON.stringify(updated, null, 2));
         const formatted = {
             ...updated,
-            departureTime: updated.departureTime.toISOString(),
-            arrivalTime: updated.arrivalTime.toISOString(),
-            createdAt: updated.createdAt.toISOString(),
-            updatedAt: updated.updatedAt.toISOString(),
-            additionalStops: updated.additionalStops
-                ? updated.additionalStops
-                    .filter((s) => s !== null)
-                    .map((stop) => {
-                    const stop_ = stop;
-                    return {
-                        stationName: stop_.stationName,
-                        arrivalTime: new Date(stop_.arrivalTime).toISOString(),
-                    };
-                })
-                : [],
+            additionalStops: updated.additionalStops?.map((s) => JSON.parse(s)),
         };
         this.trainScheduleGateway.emitScheduleChange({
             changeType: 'updated',

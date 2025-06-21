@@ -8,31 +8,26 @@ export declare class SchedulesController {
     getOne(id: string, req: RequestWithUser): Promise<ScheduleResponseDto>;
     create(scheduleDto: CreateScheduleDto): Promise<{
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        arrivalTime: Date;
         trainNumber: string;
         routeName: string;
         origin: import(".prisma/client").$Enums.City;
         destination: import(".prisma/client").$Enums.City;
         departureTime: Date;
+        arrivalTime: Date;
         additionalStops: import("@prisma/client/runtime/library").JsonValue[];
         trainType: import(".prisma/client").$Enums.TrainType;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     delete(id: string): Promise<void>;
     update(id: string, dto: UpdateScheduleDto): Promise<{
-        departureTime: string;
-        arrivalTime: string;
-        createdAt: string;
-        updatedAt: string;
-        additionalStops: {
-            stationName: import("../common/enums/city.enum").City;
-            arrivalTime: string;
-        }[];
+        additionalStops: any[];
         trainNumber: string;
         routeName: string;
         origin: import("../common/enums/city.enum").City;
         destination: import("../common/enums/city.enum").City;
+        departureTime: string;
+        arrivalTime: string;
         trainType: import("./enums/train-type.enum").TrainType;
         id: string;
     }>;

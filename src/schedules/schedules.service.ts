@@ -43,12 +43,9 @@ export class SchedulesService {
 
     const data = page.map((s) => ({
       ...(s as unknown as BaseScheduleFieldsDto & { id: string }),
-      arrivalTime: new Date(s.arrivalTime).toISOString(),
-      departureTime: new Date(s.departureTime).toISOString(),
-      createdAt: new Date(s.createdAt).toISOString(),
-      updatedAt: new Date(s.updatedAt).toISOString(),
+      additionalStops: s.additionalStops?.map((s) => JSON.parse(s as string)),
       isFavorite: false,
-    }));
+    })) as any;
 
     for (let i = 0; i < data.length; i++) {
       data[i].isFavorite = !!(await this.prisma.favorite.findFirst({
@@ -88,12 +85,9 @@ export class SchedulesService {
 
     return {
       ...(item as unknown as BaseScheduleFieldsDto & { id: string }),
-      arrivalTime: new Date(item.arrivalTime).toISOString(),
-      departureTime: new Date(item.departureTime).toISOString(),
-      createdAt: new Date(item.createdAt).toISOString(),
-      updatedAt: new Date(item.updatedAt).toISOString(),
+      additionalStops: item.additionalStops?.map((s) => JSON.parse(s as string)),
       isFavorite,
-    };
+    } as any;
   }
 
   async create(scheduleDto: CreateScheduleDto) {
@@ -108,23 +102,8 @@ export class SchedulesService {
 
     const formattedSchedule: ScheduleResponseDto = {
       ...(created as unknown as BaseScheduleFieldsDto & { id: string }),
-      departureTime: created.departureTime.toISOString(),
-      arrivalTime: created.arrivalTime.toISOString(),
-      createdAt: created.createdAt.toISOString(),
-      updatedAt: created.updatedAt.toISOString(),
-      additionalStops: created.additionalStops
-        ? created.additionalStops
-            .filter((s) => s !== null)
-            .map((stop) => {
-              const stop_ = stop as unknown as AdditionalStopDto;
-              return {
-                stationName: stop_.stationName,
-                arrivalTime: new Date(stop_.arrivalTime).toISOString(),
-              };
-            })
-        : [],
       isFavorite: false,
-    };
+    } as any;
 
     this.trainScheduleGateway.emitScheduleChange({
       changeType: 'created',
@@ -148,6 +127,7 @@ export class SchedulesService {
   }
 
   async update(id: string, dto: UpdateScheduleDto) {
+    console.log(JSON.stringify(dto, null, 2))
     const updated = await this.prisma.schedule.update({
       where: {
         id,
@@ -158,23 +138,12 @@ export class SchedulesService {
       },
     });
 
+    console.log(JSON.stringify(updated, null, 2))
+
+
     const formatted = {
       ...(updated as unknown as BaseScheduleFieldsDto & { id: string }),
-      departureTime: updated.departureTime.toISOString(),
-      arrivalTime: updated.arrivalTime.toISOString(),
-      createdAt: updated.createdAt.toISOString(),
-      updatedAt: updated.updatedAt.toISOString(),
-      additionalStops: updated.additionalStops
-        ? updated.additionalStops
-            .filter((s) => s !== null)
-            .map((stop) => {
-              const stop_ = stop as unknown as AdditionalStopDto;
-              return {
-                stationName: stop_.stationName,
-                arrivalTime: new Date(stop_.arrivalTime).toISOString(),
-              };
-            })
-        : [],
+      additionalStops: updated.additionalStops?.map((s) => JSON.parse(s as string)),
     };
 
     this.trainScheduleGateway.emitScheduleChange({
