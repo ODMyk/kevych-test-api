@@ -1,0 +1,22 @@
+services:
+  db: # This is the name of our database service
+    image: postgres:16-alpine # Use a lightweight PostgreSQL image (version 16)
+    container_name: train_schedule_postgres # A friendly name for your container
+    restart: always # Always restart the container if it stops
+    environment:
+      POSTGRES_DB: train_schedule_db # The name of the database
+      POSTGRES_USER: admin # The database user
+      POSTGRES_PASSWORD: admin # The database password
+      PGDATA: /var/lib/postgresql/data/pgdata # Directory for data within the container
+    ports:
+      - '5432:5432' # Maps host port 5432 to container port 5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Persist data to a named volume
+    healthcheck: # Optional: Define a health check for the database
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata: # Define the named volume for data persistence

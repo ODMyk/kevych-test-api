@@ -1,0 +1,6 @@
+export declare enum ENVIRONMENT_VARIABLES {
+    NODE_ENV = "NODE_ENV",
+    PORT = "PORT",
+    JWT_SECRET = "JWT_SECRET",
+    DATABASE_URL = "DATABASE_URL"
+}

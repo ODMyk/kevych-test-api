@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique // Email should be unique
+  password  String    // Hashed password
+  roles     UserRole[] @default([USER]) // Array of roles, default to USER
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  favorites Favorite[] // A user can have many favorite schedules
+}
+
+// UserRole Enum (matches your TypeScript enum)
+enum UserRole {
+  USER
+  ADMIN
+}
+
+// TrainType Enum (matches your TypeScript enum)
+enum TrainType {
+  PASSENGER
+  FREIGHT
+  HIGH_SPEED
+  SUBURBAN
+  INTERCITY
+}
+
+// City Enum (matches your TypeScript enum)
+enum City {
+  KYIV
+  LVIV
+  DNIPRO
+  ODESA
+  KHARKIV
+  ZAPORIZHZHIA
+  POLTAVA
+  CHERKASY
+  VINNYTSIA
+  CHERNIVTSI
+  TERNOPIL
+  UZHHOROD
+  KRYVYI_RIH
+  MARIUPOL
+  SUMY
+  RIVNE
+  KHERSON
+  MYKOLAIV
+  ZHYTOMYR
+  LUHANSK
+  DONETSK
+}
+
+// Schedule Model
+model Schedule {
+  id              String    @id @default(uuid())
+  trainNumber     String
+  routeName       String
+  origin          City      // Using City enum
+  destination     City      // Using City enum
+  departureTime   DateTime
+  arrivalTime     DateTime
+  // additionalStops will be stored as JSON, you'll manage the AdditionalStopDto structure in app code
+  additionalStops Json[]    @default([]) // Store array of objects as JSON
+  trainType       TrainType // Using TrainType enum
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  favorites Favorite[] // A schedule can be favorited by many users
+}
+
+// Favorite Model (Join Table for User and Schedule)
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String
+  scheduleId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade) // If user deleted, favorites are deleted
+  schedule   Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade) // If schedule deleted, favorites are deleted
+
+  @@unique([userId, scheduleId]) // A user can favorite a schedule only once
+}

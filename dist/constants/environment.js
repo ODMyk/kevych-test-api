@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ENVIRONMENT_VARIABLES = void 0;
+var ENVIRONMENT_VARIABLES;
+(function (ENVIRONMENT_VARIABLES) {
+    ENVIRONMENT_VARIABLES["NODE_ENV"] = "NODE_ENV";
+    ENVIRONMENT_VARIABLES["PORT"] = "PORT";
+    ENVIRONMENT_VARIABLES["JWT_SECRET"] = "JWT_SECRET";
+    ENVIRONMENT_VARIABLES["DATABASE_URL"] = "DATABASE_URL";
+})(ENVIRONMENT_VARIABLES || (exports.ENVIRONMENT_VARIABLES = ENVIRONMENT_VARIABLES = {}));
+//# sourceMappingURL=environment.js.map
